@@ -1,55 +1,45 @@
 ```
-# Python
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-
-# Build directories
+# Build artifacts
 build/
 dist/
-*.egg-info/
 
-# C/C++ compilation
-*.o
-*.obj
-*.a
-*.lib
-*.so
-*.dll
-*.dylib
-*.exe
-
-# CMake
-CMakeFiles/
-CMakeCache.txt
-cmake_install_manifest.txt
-Makefile
-
-# IDEs
-.vscode/
-.idea/
-*.swp
-*.swo
+# Dependencies
+vendor/
 
 # Logs
 *.log
 
 # Temporary files
 *.tmp
-*.temp
+*.swp
 
 # Environment
 .env
 .env.local
 *.env.*
 
-# Coverage
-.coverage
-coverage/
-htmlcov/
+# Editors
+.vscode/
+.idea/
 
-# Testing
-.pytest_cache/
-.mypy_cache/
+# Compiled files
+*.o
+*.obj
+*.a
+*.lib
+*.dll
+*.so
+*.dylib
+*.exe
+*.out
+
+# CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# System files
+.DS_Store
+Thumbs.db
 ```
