@@ -1,48 +1,56 @@
 ```
 # Build artifacts
-build/
-dist/
 *.o
 *.obj
-*.a
-*.lib
+*.exe
 *.dll
 *.so
-*.dylib
-*.exe
+*.a
+*.out
+
+# C++ specific
+*.ilk
+*.pdb
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build directories
+build/
+cmake-build-*/
+dist/
+bin/
+lib/
 
 # Dependencies
-node_modules/
 vendor/
-
-# IDE files
-.vscode/
-.idea/
-*.swp
-*.swo
-*.tmp
 
 # Logs
 *.log
 
-# Coverage reports
-coverage/
-htmlcov/
-.coverage
+# Temporary files
+*.tmp
+*.temp
+*~
 
 # Environment
 .env
 .env.local
-*.env.*
+.env.*
 
-# OS generated files
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
 .DS_Store
 Thumbs.db
 
-# Cache directories
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
+# Coverage
+coverage/
+htmlcov/
+.coverage
 ```

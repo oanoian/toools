@@ -15,6 +15,7 @@
 #include <unordered_map>
 #include <bitset>
 #include <type_traits>
+#include <memory>
 
 namespace Alpha1::ECS {
 
@@ -63,7 +64,7 @@ public:
     uint32_t GetVersion() const { return m_version; }
     
     bool operator==(const Entity& other) const {
-        return m_id == other.m_id && m_version == other.version;
+        return m_id == other.m_id && m_version == other.m_version;
     }
     
     bool operator!=(const Entity& other) const {
