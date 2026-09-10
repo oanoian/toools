@@ -2,44 +2,56 @@
 # Build artifacts
 build/
 dist/
-
-# Dependencies
-vendor/
-
-# Logs
-*.log
-
-# Temporary files
-*.tmp
-*.swp
-
-# Environment
-.env
-.env.local
-*.env.*
-
-# Editors
-.vscode/
-.idea/
-
-# Compiled files
 *.o
 *.obj
-*.a
-*.lib
+*.exe
 *.dll
 *.so
-*.dylib
-*.exe
+*.a
 *.out
+
+# Dependencies
+venv/
+.venv/
+node_modules/
 
 # CMake
 CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
 Makefile
+*_autogen/
 
-# System files
+# Compiler and IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.tmp
+*.log
+
+# Coverage
+coverage/
+htmlcov/
+.coverage
+
+# Environment
+.env
+.env.local
+*.env.*
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Logs
+*.log
+
+# OS generated
 .DS_Store
 Thumbs.db
 ```
