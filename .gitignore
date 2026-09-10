@@ -4,33 +4,28 @@ build/
 dist/
 *.o
 *.obj
-*.exe
+*.a
+*.lib
 *.dll
 *.so
-*.a
-*.out
+*.dylib
+*.exe
 
 # Dependencies
-venv/
-.venv/
 node_modules/
+vendor/
 
-# CMake
-CMakeFiles/
-CMakeCache.txt
-cmake_install.cmake
-Makefile
-*_autogen/
-
-# Compiler and IDE
+# IDE files
 .vscode/
 .idea/
 *.swp
 *.swo
 *.tmp
+
+# Logs
 *.log
 
-# Coverage
+# Coverage reports
 coverage/
 htmlcov/
 .coverage
@@ -40,18 +35,14 @@ htmlcov/
 .env.local
 *.env.*
 
-# Python
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Cache directories
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 .Python
-*.so
-
-# Logs
-*.log
-
-# OS generated
-.DS_Store
-Thumbs.db
 ```

@@ -15,6 +15,7 @@
 #include <optional>
 #include <variant>
 #include <functional>
+#include <chrono>
 
 // Platform detection
 #if defined(_WIN32) || defined(_WIN64)
@@ -83,7 +84,7 @@ public:
     explicit operator bool() const { return m_success; }
     
 private:
-    variant<T, string> m_data;
+    std::variant<T, std::string> m_data;
     T m_value;
     std::string m_error;
     bool m_success;

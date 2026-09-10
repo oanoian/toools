@@ -15,6 +15,10 @@ namespace Alpha1 {
 
 using namespace Core;
 
+// Type aliases for time management
+using TimePoint = std::chrono::time_point<std::chrono::high_resolution_clock>;
+using Duration = std::chrono::duration<float>;
+
 // Global state
 static std::atomic<bool> s_initialized{false};
 static std::atomic<float> s_frameTime{0.0f};
@@ -28,7 +32,7 @@ Result<void> Initialize(const char* config_path) {
     }
     
     // Record start time
-    s_startTime = Clock::now();
+    s_startTime = std::chrono::high_resolution_clock::now();
     s_lastFrameTime = s_startTime;
     
     // Initialize logging
@@ -38,7 +42,7 @@ Result<void> Initialize(const char* config_path) {
         Logger::Instance().SetLogFile(std::string(config_path) + ".log");
     }
     
-    LOG_INFO("Alpha1 Framework v" VERSION_STRING " initializing...");
+    LOG_INFO(std::string("Alpha1 Framework v") + VERSION_STRING + " initializing...");
     
     // TODO: Initialize subsystems in order:
     // 1. Memory managers
@@ -93,9 +97,9 @@ void Update() {
     }
     
     // Calculate frame time
-    TimePoint now = Clock::now();
+    TimePoint now = std::chrono::high_resolution_clock::now();
     Duration delta = now - s_lastFrameTime;
-    s_frameTime.store(std::chrono::duration<float>(delta).count());
+    s_frameTime.store(delta.count());
     s_lastFrameTime = now;
     
     // Calculate FPS
