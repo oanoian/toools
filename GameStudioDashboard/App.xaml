@@ -1,0 +1,45 @@
+<Application x:Class="GameStudioDashboard.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:GameStudioDashboard.ViewModels"
+             xmlns:views="clr-namespace:GameStudioDashboard.Views"
+             xmlns:inf="clr-namespace:GameStudioDashboard.Infrastructure"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/Colors.xaml" />
+                <ResourceDictionary Source="Themes/Controls.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <inf:FractionToWidthConverter x:Key="FractionToWidth" />
+            <inf:PercentToWidthConverter x:Key="PercentToWidth" />
+            <inf:BuildStatusToBrushConverter x:Key="StatusToBrush" />
+            <inf:HealthToBrushConverter x:Key="HealthToBrush" />
+            <inf:UtilizationToBrushConverter x:Key="UtilToBrush" />
+            <inf:BoolToRiskBrushConverter x:Key="RiskToBrush" />
+            <inf:EqualityToBoolConverter x:Key="EqualityToBool" />
+
+            <!-- ViewModel -> View mappings. The shell's ContentControl renders the
+                 matching UserControl automatically when CurrentView changes. -->
+            <DataTemplate DataType="{x:Type vm:OverviewViewModel}">
+                <views:OverviewView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:BuildsViewModel}">
+                <views:BuildsView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:UtilizationViewModel}">
+                <views:UtilizationView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:ProjectViewModel}">
+                <views:ProjectView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:LiveOpsViewModel}">
+                <views:LiveOpsView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:SettingsViewModel}">
+                <views:SettingsView />
+            </DataTemplate>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
