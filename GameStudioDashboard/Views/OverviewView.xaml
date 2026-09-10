@@ -1,0 +1,99 @@
+<UserControl x:Class="GameStudioDashboard.Views.OverviewView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="28,24">
+        <StackPanel>
+
+            <!-- KPI row -->
+            <UniformGrid Rows="1" Columns="4" Margin="0,0,0,18">
+                <Border Style="{StaticResource Card}" Margin="0,0,8,0">
+                    <StackPanel>
+                        <TextBlock Text="HEALTHY BUILDS" Style="{StaticResource Eyebrow}" />
+                        <TextBlock Style="{StaticResource Metric}" Margin="0,10,0,0">
+                            <Run Text="{Binding HealthyBuildsPct, StringFormat={}{0:0}}" /><Run Text="%" />
+                        </TextBlock>
+                        <TextBlock Text="score ≥ 70 across pipeline" Foreground="{DynamicResource MutedBrush}" FontSize="12" Margin="0,4,0,0" />
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Card}" Margin="8,0">
+                    <StackPanel>
+                        <TextBlock Text="AVG FRAMERATE" Style="{StaticResource Eyebrow}" />
+                        <TextBlock Style="{StaticResource Metric}" Margin="0,10,0,0">
+                            <Run Text="{Binding AvgFps, StringFormat={}{0:0}}" /><Run Text=" fps" />
+                        </TextBlock>
+                        <TextBlock Text="latest capture session" Foreground="{DynamicResource MutedBrush}" FontSize="12" Margin="0,4,0,0" />
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Card}" Margin="8,0">
+                    <StackPanel>
+                        <TextBlock Text="FARM UTILIZATION" Style="{StaticResource Eyebrow}" />
+                        <TextBlock Style="{StaticResource Metric}" Margin="0,10,0,0">
+                            <Run Text="{Binding FarmUtilization, StringFormat={}{0:0.0}}" /><Run Text="%" />
+                        </TextBlock>
+                        <TextBlock Text="best-fit scheduler" Foreground="{DynamicResource MutedBrush}" FontSize="12" Margin="0,4,0,0" />
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Card}" Margin="8,0,0,0">
+                    <StackPanel>
+                        <TextBlock Text="DAILY ACTIVE USERS" Style="{StaticResource Eyebrow}" />
+                        <TextBlock Style="{StaticResource Metric}" Margin="0,10,0,0"
+                                   Text="{Binding Dau, StringFormat={}{0:N0}}" />
+                        <TextBlock Text="live-ops feed" Foreground="{DynamicResource MutedBrush}" FontSize="12" Margin="0,4,0,0" />
+                    </StackPanel>
+                </Border>
+            </UniformGrid>
+
+            <!-- Charts row -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Border Style="{StaticResource Card}" Margin="0,0,8,0">
+                    <DockPanel>
+                        <TextBlock DockPanel.Dock="Top" Text="Daily active users · 30 days" Style="{StaticResource H2}" Margin="0,0,0,12" />
+                        <lvc:CartesianChart Series="{Binding DauSeries}" XAxes="{Binding HiddenAxes}"
+                                            TooltipPosition="Top" Height="240" />
+                    </DockPanel>
+                </Border>
+
+                <Border Style="{StaticResource Card}" Grid.Column="1" Margin="8,0,0,0">
+                    <DockPanel>
+                        <TextBlock DockPanel.Dock="Top" Text="Build mix" Style="{StaticResource H2}" Margin="0,0,0,12" />
+                        <lvc:PieChart Series="{Binding BuildMixSeries}" Height="240" />
+                    </DockPanel>
+                </Border>
+            </Grid>
+
+            <!-- Projection strip -->
+            <Border Style="{StaticResource Card}" Margin="0,16,0,0">
+                <UniformGrid Rows="1" Columns="3">
+                    <StackPanel>
+                        <TextBlock Text="PROJECTED LTV" Style="{StaticResource Eyebrow}" />
+                        <TextBlock Style="{StaticResource MonoLabel}" FontSize="22" Margin="0,8,0,0">
+                            <Run Text="$" /><Run Text="{Binding ProjectedLtv, StringFormat={}{0:N2}}" />
+                        </TextBlock>
+                        <TextBlock Text="power-law retention fit, 90d horizon" Foreground="{DynamicResource MutedBrush}" FontSize="12" Margin="0,4,0,0" />
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBlock Text="PROJECTED D30 RETENTION" Style="{StaticResource Eyebrow}" />
+                        <TextBlock Style="{StaticResource MonoLabel}" FontSize="22" Margin="0,8,0,0">
+                            <Run Text="{Binding ProjectedD30, StringFormat={}{0:0.0}}" /><Run Text="%" />
+                        </TextBlock>
+                        <TextBlock Text="extrapolated from cohort curve" Foreground="{DynamicResource MutedBrush}" FontSize="12" Margin="0,4,0,0" />
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBlock Text="AVG BUILD TIME" Style="{StaticResource Eyebrow}" />
+                        <TextBlock Style="{StaticResource MonoLabel}" FontSize="22" Margin="0,8,0,0">
+                            <Run Text="{Binding AvgBuildMinutes, StringFormat={}{0:0.0}}" /><Run Text=" min" />
+                        </TextBlock>
+                        <TextBlock Text="rolling pipeline average" Foreground="{DynamicResource MutedBrush}" FontSize="12" Margin="0,4,0,0" />
+                    </StackPanel>
+                </UniformGrid>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
