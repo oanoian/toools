@@ -12,11 +12,32 @@ from .scene_builder import SceneBuilder
 from .collision_utils import CollisionUtils
 from .animation_tools import AnimationTools
 from .level_generator import LevelGenerator
+from .vulkan_engine import (
+    VulkanOptimizationManager,
+    NvidiaOptimizations,
+    AmdOptimizations,
+    MemoryAllocator,
+    CommandBufferOptimizer,
+    BatchRenderer,
+    TiledRenderer,
+    GPUVendor,
+    VendorExtensions
+)
 
 __all__ = [
     'AssetManager',
     'SceneBuilder',
     'CollisionUtils',
     'AnimationTools',
-    'LevelGenerator'
+    'LevelGenerator',
+    # Vulkan Engine
+    'VulkanOptimizationManager',
+    'NvidiaOptimizations',
+    'AmdOptimizations',
+    'MemoryAllocator',
+    'CommandBufferOptimizer',
+    'BatchRenderer',
+    'TiledRenderer',
+    'GPUVendor',
+    'VendorExtensions'
 ]
