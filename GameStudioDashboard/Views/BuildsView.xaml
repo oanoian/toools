@@ -1,0 +1,114 @@
+<UserControl x:Class="GameStudioDashboard.Views.BuildsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF">
+    <Grid Margin="28,24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- KPI strip -->
+        <UniformGrid Grid.Row="0" Rows="1" Columns="3" Margin="0,0,0,16">
+            <Border Style="{StaticResource Card}" Margin="0,0,8,0">
+                <StackPanel>
+                    <TextBlock Text="PASS RATE" Style="{StaticResource Eyebrow}" />
+                    <TextBlock Style="{StaticResource Metric}" Margin="0,8,0,0">
+                        <Run Text="{Binding PassRatePct, StringFormat={}{0:0.0}}" /><Run Text="%" />
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Card}" Margin="8,0">
+                <StackPanel>
+                    <TextBlock Text="AVG HEALTH SCORE" Style="{StaticResource Eyebrow}" />
+                    <TextBlock Style="{StaticResource Metric}" Margin="0,8,0,0" Text="{Binding AvgHealth, StringFormat={}{0:0.0}}" />
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Card}" Margin="8,0,0,0">
+                <StackPanel>
+                    <TextBlock Text="DURATION BASELINE (EWMA)" Style="{StaticResource Eyebrow}" />
+                    <TextBlock Style="{StaticResource Metric}" Margin="0,8,0,0">
+                        <Run Text="{Binding DurationBaseline, StringFormat={}{0:0.0}}" /><Run Text=" min" />
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+        </UniformGrid>
+
+        <!-- Duration chart -->
+        <Border Grid.Row="1" Style="{StaticResource Card}" Margin="0,0,0,16">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Top" Text="Build duration by job" Style="{StaticResource H2}" Margin="0,0,0,12" />
+                <lvc:CartesianChart Series="{Binding DurationSeries}" XAxes="{Binding XAxes}" YAxes="{Binding YAxes}" Height="200" />
+            </DockPanel>
+        </Border>
+
+        <!-- Controls -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,12">
+            <TextBlock Text="Filter" VerticalAlignment="Center" Foreground="{DynamicResource MutedBrush}" Margin="0,0,10,0" />
+            <ComboBox ItemsSource="{Binding Filters}" SelectedItem="{Binding SelectedFilter}"
+                      Width="150" VerticalContentAlignment="Center" />
+            <Button Content="Toggle sort (health ⇄ recent)" Command="{Binding ToggleSortCommand}"
+                    Style="{StaticResource GhostButton}" Margin="12,0,0,0" />
+        </StackPanel>
+
+        <!-- Build list -->
+        <Border Grid.Row="3" Style="{StaticResource Card}" Padding="6">
+            <ListView ItemsSource="{Binding Builds}" Background="Transparent" BorderThickness="0"
+                      ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="" Width="26">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Ellipse Width="10" Height="10" Fill="{Binding Status, Converter={StaticResource StatusToBrush}}" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="BUILD" Width="72" DisplayMemberBinding="{Binding Id}" />
+                        <GridViewColumn Header="BRANCH" Width="180" DisplayMemberBinding="{Binding Branch}" />
+                        <GridViewColumn Header="PLATFORM" Width="120" DisplayMemberBinding="{Binding Platform}" />
+                        <GridViewColumn Header="AUTHOR" Width="130" DisplayMemberBinding="{Binding Author}" />
+                        <GridViewColumn Header="DUR" Width="80">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock FontFamily="{DynamicResource MonoFont}">
+                                        <Run Text="{Binding DurationMinutes, StringFormat={}{0:0.0}}" /><Run Text="m" />
+                                    </TextBlock>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="PASS%" Width="80">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock FontFamily="{DynamicResource MonoFont}"
+                                               Text="{Binding PassRate, StringFormat={}{0:P1}}" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="HEALTH" Width="180">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="110" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Border Background="{DynamicResource SurfaceAltBrush}" CornerRadius="4" Height="8" VerticalAlignment="Center">
+                                            <Border HorizontalAlignment="Left" CornerRadius="4" Height="8"
+                                                    Background="{Binding HealthScore, Converter={StaticResource HealthToBrush}}"
+                                                    Width="{Binding HealthScore, Converter={StaticResource PercentToWidth}, ConverterParameter=110}" />
+                                        </Border>
+                                        <TextBlock Grid.Column="1" Margin="10,0,0,0" FontFamily="{DynamicResource MonoFont}"
+                                                   Text="{Binding HealthScore, StringFormat={}{0:0.0}}" VerticalAlignment="Center" />
+                                    </Grid>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </Border>
+    </Grid>
+</UserControl>

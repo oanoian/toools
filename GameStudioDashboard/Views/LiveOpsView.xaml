@@ -1,0 +1,73 @@
+<UserControl x:Class="GameStudioDashboard.Views.LiveOpsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="28,24">
+        <StackPanel>
+
+            <!-- KPI -->
+            <UniformGrid Rows="1" Columns="4" Margin="0,0,0,16">
+                <Border Style="{StaticResource Card}" Margin="0,0,8,0">
+                    <StackPanel>
+                        <TextBlock Text="DAILY ACTIVE USERS" Style="{StaticResource Eyebrow}" />
+                        <TextBlock Style="{StaticResource Metric}" Margin="0,8,0,0" Text="{Binding CurrentDau, StringFormat={}{0:N0}}" />
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Card}" Margin="8,0">
+                    <StackPanel>
+                        <TextBlock Text="DAILY REVENUE" Style="{StaticResource Eyebrow}" />
+                        <TextBlock Style="{StaticResource Metric}" Margin="0,8,0,0">
+                            <Run Text="$" /><Run Text="{Binding DailyRevenue, StringFormat={}{0:N0}}" />
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Card}" Margin="8,0">
+                    <StackPanel>
+                        <TextBlock Text="SERVER LOAD" Style="{StaticResource Eyebrow}" />
+                        <TextBlock Style="{StaticResource Metric}" Margin="0,8,0,0">
+                            <Run Text="{Binding CurrentServerLoad, StringFormat={}{0:0.0}}" /><Run Text="%" />
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Card}" Margin="8,0,0,0">
+                    <StackPanel>
+                        <TextBlock Text="PROJECTED LTV" Style="{StaticResource Eyebrow}" />
+                        <TextBlock Style="{StaticResource Metric}" Margin="0,8,0,0">
+                            <Run Text="$" /><Run Text="{Binding ProjectedLtv, StringFormat={}{0:N2}}" />
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+            </UniformGrid>
+
+            <!-- Metric selector + main chart -->
+            <Border Style="{StaticResource Card}" Margin="0,0,0,16">
+                <DockPanel>
+                    <Grid DockPanel.Dock="Top" Margin="0,0,0,12">
+                        <TextBlock Text="Live-ops trend · 30 days" Style="{StaticResource H2}" VerticalAlignment="Center" />
+                        <ComboBox HorizontalAlignment="Right" Width="150" ItemsSource="{Binding Metrics}"
+                                  SelectedItem="{Binding SelectedMetric}" VerticalContentAlignment="Center" />
+                    </Grid>
+                    <lvc:CartesianChart Series="{Binding Series}" XAxes="{Binding XAxes}" YAxes="{Binding YAxes}"
+                                        TooltipPosition="Top" Height="260" />
+                </DockPanel>
+            </Border>
+
+            <!-- Retention -->
+            <Border Style="{StaticResource Card}">
+                <DockPanel>
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12">
+                        <TextBlock Text="Fitted retention curve" Style="{StaticResource H2}" />
+                        <TextBlock VerticalAlignment="Center" Margin="16,0,0,0" FontFamily="{DynamicResource MonoFont}"
+                                   FontSize="12" Foreground="{DynamicResource MutedBrush}">
+                            <Run Text="λ=" /><Run Text="{Binding DecayLambda}" />
+                            <Run Text="   D30≈" /><Run Text="{Binding ProjectedD30, StringFormat={}{0:0.0}}" /><Run Text="%" />
+                        </TextBlock>
+                    </StackPanel>
+                    <lvc:CartesianChart Series="{Binding RetentionSeries}" XAxes="{Binding RetentionXAxes}"
+                                        YAxes="{Binding RetentionYAxes}" Height="220" />
+                </DockPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

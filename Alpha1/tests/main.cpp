@@ -1,203 +1,311 @@
-/**
- * Alpha1 Test Suite
- * 
- * Comprehensive tests for all framework components.
- */
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include "doctest.h"
 
-#include <alpha1/alpha1.h>
-#include <iostream>
-#include <cassert>
+// Alpha1 Framework Test Suite
+// Task 0.1: Minimal unit test scaffold
 
-using namespace Alpha1;
+#include "alpha1/alpha1.h"
+#include "alpha1/core/types.h"
+#include "alpha1/core/memory.h"
+#include "alpha1/core/logging.h"
+#include "alpha1/core/threading.h"
+#include "alpha1/ecs/entity.h"
 
-void TestCoreTypes() {
-    std::cout << "Testing Core Types..." << std::endl;
-    
-    // Test EntityID
-    EntityID id = 42;
-    assert(id == 42);
-    assert(INVALID_ENTITY == Core::INVALID_ENTITY_ID);
-    
-    // Test Result<T>
-    Result<int> successResult(42);
-    assert(successResult.IsSuccess());
-    assert(successResult.Value() == 42);
-    
-    Result<int> errorResult("Test error");
-    assert(errorResult.IsError());
-    assert(errorResult.Error() == "Test error");
-    
-    Result<void> voidResult;
-    assert(voidResult.IsSuccess());
-    
-    Result<void> voidError("Void error");
-    assert(voidError.IsError());
-    
-    std::cout << "  ✓ Core Types passed" << std::endl;
-}
+using namespace alpha1;
 
-void TestMemoryAllocators() {
-    std::cout << "Testing Memory Allocators..." << std::endl;
-    
-    using namespace Core;
-    
-    // Test Arena Allocator
-    ArenaAllocator arena(1024);
-    void* ptr1 = arena.Allocate(64);
-    void* ptr2 = arena.Allocate(128);
-    assert(ptr1 != nullptr);
-    assert(ptr2 != nullptr);
-    assert(arena.Used() >= 192);
-    arena.Reset();
-    assert(arena.Used() == 0);
-    
-    // Test Pool Allocator
-    PoolAllocator<int, 32> pool;
-    int* p1 = pool.Allocate();
-    int* p2 = pool.Allocate();
-    assert(p1 != nullptr);
-    assert(p2 != nullptr);
-    assert(p1 != p2);
-    pool.Deallocate(p1);
-    pool.Deallocate(p2);
-    
-    std::cout << "  ✓ Memory Allocators passed" << std::endl;
-}
+// ============================================================================
+// TEST SUITE: Core Types
+// ============================================================================
 
-void TestECS() {
-    std::cout << "Testing ECS..." << std::endl;
-    
-    using namespace ECS;
-    
-    // Define test components
-    struct Position {
-        float x, y, z;
-        Position(float _x = 0, float _y = 0, float _z = 0) : x(_x), y(_y), z(_z) {}
-    };
-    
-    struct Velocity {
-        float dx, dy, dz;
-        Velocity(float _dx = 0, float _dy = 0, float _dz = 0) : dx(_dx), dy(_dy), dz(_dz) {}
-    };
-    
-    // Create world
-    World world;
-    
-    // Create entities
-    Entity e1 = world.CreateEntity();
-    Entity e2 = world.CreateEntity();
-    
-    assert(e1.IsValid());
-    assert(e2.IsValid());
-    assert(e1.GetID() != e2.GetID());
-    
-    // Add components
-    world.AddComponent<Position>(e1, 1.0f, 2.0f, 3.0f);
-    world.AddComponent<Velocity>(e1, 0.1f, 0.2f, 0.3f);
-    world.AddComponent<Position>(e2, 10.0f, 20.0f, 30.0f);
-    
-    // Check components exist
-    assert(world.HasComponent<Position>(e1));
-    assert(world.HasComponent<Velocity>(e1));
-    assert(world.HasComponent<Position>(e2));
-    assert(!world.HasComponent<Velocity>(e2));
-    
-    // Get components
-    Position* pos1 = world.GetComponent<Position>(e1);
-    assert(pos1 != nullptr);
-    assert(pos1->x == 1.0f);
-    assert(pos1->y == 2.0f);
-    assert(pos1->z == 3.0f);
-    
-    Velocity* vel1 = world.GetComponent<Velocity>(e1);
-    assert(vel1 != nullptr);
-    assert(vel1->dx == 0.1f);
-    
-    // Remove component
-    world.RemoveComponent<Velocity>(e1);
-    assert(!world.HasComponent<Velocity>(e1));
-    
-    // Destroy entity
-    world.DestroyEntity(e1);
-    assert(!e1.IsValid());
-    
-    std::cout << "  ✓ ECS passed" << std::endl;
-}
-
-void TestThreading() {
-    std::cout << "Testing Threading..." << std::endl;
-    
-    using namespace Core;
-    
-    // Test Thread Pool
-    ThreadPool pool(4);
-    
-    std::atomic<int> counter{0};
-    
-    // Submit tasks
-    std::vector<std::future<int>> futures;
-    for (int i = 0; i < 100; ++i) {
-        futures.push_back(pool.Submit([&counter, i]() {
-            ++counter;
-            return i * 2;
-        }));
+TEST_SUITE("CoreTypes") {
+    TEST_CASE("Result<T> - Ok value") {
+        auto result = Result<int>::Ok(42);
+        CHECK(result.IsOk());
+        CHECK(result.Value() == 42);
     }
-    
-    // Wait for completion
-    pool.WaitAll();
-    assert(counter.load() == 100);
-    
-    // Check results
-    for (int i = 0; i < 100; ++i) {
-        assert(futures[i].get() == i * 2);
+
+    TEST_CASE("Result<T> - Error value") {
+        auto result = Result<int>::Error("Test error message");
+        CHECK(!result.IsOk());
+        CHECK(result.ErrorMessage() == "Test error message");
     }
-    
-    std::cout << "  ✓ Threading passed" << std::endl;
+
+    TEST_CASE("EntityID - Valid construction") {
+        EntityID id{1, 5};
+        CHECK(id.index == 1);
+        CHECK(id.generation == 5);
+    }
+
+    TEST_CASE("EntityID - Equality operator") {
+        EntityID id1{1, 5};
+        EntityID id2{1, 5};
+        EntityID id3{2, 5};
+        CHECK(id1 == id2);
+        CHECK(id1 != id3);
+    }
 }
 
-void TestFramework() {
-    std::cout << "Testing Framework Initialization..." << std::endl;
-    
-    // Initialize
-    auto result = Initialize(nullptr);
-    assert(result.IsSuccess());
-    assert(IsInitialized());
-    
-    // Run update loop
-    for (int i = 0; i < 10; ++i) {
-        Update();
-        std::this_thread::sleep_for(std::chrono::milliseconds(16));
-    }
-    
-    assert(GetFPS() > 0.0f);
-    assert(GetFrameTime() > 0.0f);
-    
-    // Shutdown
-    Shutdown();
-    assert(!IsInitialized());
-    
-    std::cout << "  ✓ Framework passed" << std::endl;
-}
+// ============================================================================
+// TEST SUITE: Memory Allocators
+// ============================================================================
 
-int main(int argc, char** argv) {
-    std::cout << "========================================" << std::endl;
-    std::cout << "Alpha1 Framework Test Suite v" << VERSION_STRING << std::endl;
-    std::cout << "========================================" << std::endl;
-    
-    try {
-        TestCoreTypes();
-        TestMemoryAllocators();
-        TestECS();
-        TestThreading();
-        TestFramework();
+TEST_SUITE("MemoryAllocators") {
+    TEST_CASE("ArenaAllocator - Basic allocation") {
+        ArenaAllocator arena(1024);
+        void* ptr = arena.Allocate(64, 8);
+        CHECK(ptr != nullptr);
         
-        std::cout << "========================================" << std::endl;
-        std::cout << "ALL TESTS PASSED ✓" << std::endl;
-        std::cout << "========================================" << std::endl;
+        // Check alignment
+        CHECK(reinterpret_cast<uintptr_t>(ptr) % 8 == 0);
+    }
+
+    TEST_CASE("ArenaAllocator - Multiple allocations") {
+        ArenaAllocator arena(1024);
+        void* ptr1 = arena.Allocate(128, 8);
+        void* ptr2 = arena.Allocate(256, 8);
         
-        return 0;
-    } catch (const std::exception& e) {
-        std::cerr << "TEST FAILED: " << e.what() << std::endl;
-        return 1;
+        CHECK(ptr1 != nullptr);
+        CHECK(ptr2 != nullptr);
+        CHECK(ptr1 != ptr2);
+    }
+
+    TEST_CASE("ArenaAllocator - Reset") {
+        ArenaAllocator arena(1024);
+        arena.Allocate(512, 8);
+        size_t used_before = arena.GetUsedSize();
+        arena.Reset();
+        size_t used_after = arena.GetUsedSize();
+        
+        CHECK(used_before > 0);
+        CHECK(used_after == 0);
+    }
+
+    TEST_CASE("PoolAllocator - Basic allocation") {
+        PoolAllocator pool(64, 16); // Block size 64, 16 blocks
+        void* ptr = pool.Allocate();
+        CHECK(ptr != nullptr);
+        
+        pool.Deallocate(ptr);
+    }
+
+    TEST_CASE("PoolAllocator - Multiple allocations") {
+        PoolAllocator pool(32, 8);
+        std::vector<void*> ptrs;
+        
+        for (int i = 0; i < 8; ++i) {
+            ptrs.push_back(pool.Allocate());
+        }
+        
+        // All should be non-null and unique
+        for (auto ptr : ptrs) {
+            CHECK(ptr != nullptr);
+        }
+        
+        // Deallocate all
+        for (auto ptr : ptrs) {
+            pool.Deallocate(ptr);
+        }
+    }
+}
+
+// ============================================================================
+// TEST SUITE: ECS System
+// ============================================================================
+
+TEST_SUITE("ECSSystem") {
+    TEST_CASE("EntityManager - Create entity") {
+        ECSWorld world;
+        auto entity = world.CreateEntity();
+        CHECK(entity.IsOk());
+        CHECK(entity.Value().index >= 0);
+    }
+
+    TEST_CASE("EntityManager - Destroy entity") {
+        ECSWorld world;
+        auto create_result = world.CreateEntity();
+        CHECK(create_result.IsOk());
+        
+        EntityID entity = create_result.Value();
+        auto destroy_result = world.DestroyEntity(entity);
+        CHECK(destroy_result.IsOk());
+    }
+
+    TEST_CASE("ComponentManager - Add component") {
+        ECSWorld world;
+        auto create_result = world.CreateEntity();
+        CHECK(create_result.IsOk());
+        
+        EntityID entity = create_result.Value();
+        
+        struct TestComponent {
+            int value;
+        };
+        
+        auto add_result = world.AddComponent<TestComponent>(entity, TestComponent{42});
+        CHECK(add_result.IsOk());
+    }
+
+    TEST_CASE("ComponentManager - Remove component") {
+        ECSWorld world;
+        auto create_result = world.CreateEntity();
+        CHECK(create_result.IsOk());
+        
+        EntityID entity = create_result.Value();
+        
+        struct TestComponent {
+            int value;
+        };
+        
+        world.AddComponent<TestComponent>(entity, TestComponent{42});
+        auto remove_result = world.RemoveComponent<TestComponent>(entity);
+        CHECK(remove_result.IsOk());
+    }
+
+    TEST_CASE("System - Signature matching") {
+        ECSWorld world;
+        
+        // Create entities with different component combinations
+        auto e1_result = world.CreateEntity();
+        auto e2_result = world.CreateEntity();
+        auto e3_result = world.CreateEntity();
+        
+        CHECK(e1_result.IsOk() && e2_result.IsOk() && e3_result.IsOk());
+        
+        EntityID e1 = e1_result.Value();
+        EntityID e2 = e2_result.Value();
+        EntityID e3 = e3_result.Value();
+        
+        struct Position { float x, y; };
+        struct Velocity { float dx, dy; };
+        struct Renderable { int mesh_id; };
+        
+        // e1: Position + Velocity
+        world.AddComponent<Position>(e1, Position{0.0f, 0.0f});
+        world.AddComponent<Velocity>(e1, Velocity{1.0f, 1.0f});
+        
+        // e2: Position + Renderable
+        world.AddComponent<Position>(e2, Position{1.0f, 1.0f});
+        world.AddComponent<Renderable>(e2, Renderable{1});
+        
+        // e3: Position + Velocity + Renderable
+        world.AddComponent<Position>(e3, Position{2.0f, 2.0f});
+        world.AddComponent<Velocity>(e3, Velocity{2.0f, 2.0f});
+        world.AddComponent<Renderable>(e3, Renderable{2});
+        
+        // Query entities with Position + Velocity
+        auto query_result = world.Query<Position, Velocity>();
+        CHECK(query_result.IsOk());
+        
+        const auto& matched_entities = query_result.Value();
+        CHECK(matched_entities.size() == 2); // e1 and e3
+        
+        // Verify correct entities matched
+        bool found_e1 = false, found_e3 = false;
+        for (const auto& eid : matched_entities) {
+            if (eid == e1) found_e1 = true;
+            if (eid == e3) found_e3 = true;
+        }
+        CHECK(found_e1);
+        CHECK(found_e3);
+    }
+}
+
+// ============================================================================
+// TEST SUITE: Threading Primitives
+// ============================================================================
+
+TEST_SUITE("ThreadingPrimitives") {
+    TEST_CASE("SpinLock - Basic lock/unlock") {
+        SpinLock lock;
+        int counter = 0;
+        
+        lock.lock();
+        counter++;
+        lock.unlock();
+        
+        CHECK(counter == 1);
+    }
+
+    TEST_CASE("ConcurrentQueue - Push/Pop") {
+        ConcurrentQueue<int> queue;
+        
+        queue.Push(1);
+        queue.Push(2);
+        queue.Push(3);
+        
+        int value;
+        CHECK(queue.Pop(value));
+        CHECK(value == 1);
+        
+        CHECK(queue.Pop(value));
+        CHECK(value == 2);
+        
+        CHECK(queue.Pop(value));
+        CHECK(value == 3);
+    }
+
+    TEST_CASE("ThreadPool - Execute task") {
+        ThreadPool pool(2);
+        std::atomic<int> counter{0};
+        
+        pool.Enqueue([&counter]() {
+            counter++;
+        });
+        
+        // Give time for task execution
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        
+        CHECK(counter.load() >= 1);
+    }
+
+    TEST_CASE("Barrier - Synchronize threads") {
+        const int num_threads = 4;
+        Barrier barrier(num_threads);
+        std::atomic<int> counter{0};
+        
+        std::vector<std::thread> threads;
+        for (int i = 0; i < num_threads; ++i) {
+            threads.emplace_back([&barrier, &counter]() {
+                counter++;
+                barrier.Wait();
+                // After barrier, all threads should have incremented
+                CHECK(counter.load() == num_threads);
+            });
+        }
+        
+        for (auto& t : threads) {
+            t.join();
+        }
+    }
+}
+
+// ============================================================================
+// TEST SUITE: Framework Lifecycle
+// ============================================================================
+
+TEST_SUITE("FrameworkLifecycle") {
+    TEST_CASE("Framework - Initialize and shutdown") {
+        FrameworkConfig config;
+        config.log_level = LogLevel::INFO;
+        
+        auto init_result = Framework::Initialize(config);
+        CHECK(init_result.IsOk());
+        
+        auto shutdown_result = Framework::Shutdown();
+        CHECK(shutdown_result.IsOk());
+    }
+
+    TEST_CASE("Framework - Double initialization fails") {
+        FrameworkConfig config;
+        config.log_level = LogLevel::INFO;
+        
+        auto init1 = Framework::Initialize(config);
+        CHECK(init1.IsOk());
+        
+        auto init2 = Framework::Initialize(config);
+        CHECK(!init2.IsOk()); // Should fail - already initialized
+        
+        auto shutdown_result = Framework::Shutdown();
+        CHECK(shutdown_result.IsOk());
     }
 }

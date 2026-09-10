@@ -65,9 +65,24 @@ set_target_properties(alpha1 PROPERTIES
 
 # Tests
 enable_testing()
+
+# Test framework (doctest - single header)
 add_executable(alpha1_tests tests/main.cpp)
 target_link_libraries(alpha1_tests alpha1)
+target_include_directories(alpha1_tests PRIVATE ${CMAKE_SOURCE_DIR}/tests)
 add_test(NAME Alpha1Tests COMMAND alpha1_tests)
+
+# Benchmark harness
+add_executable(alpha1_bench bench/ecs_benchmark.cpp)
+target_link_libraries(alpha1_bench alpha1)
+target_include_directories(alpha1_bench PRIVATE ${CMAKE_SOURCE_DIR}/tests)
+
+# Sanitizer support (Task 1.1)
+option(ALPHA1_ENABLE_SANITIZERS "Enable ASan/UBSan in Debug builds" ON)
+if(ALPHA1_ENABLE_SANITIZERS AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_compile_options(-fsanitize=address,undefined -fno-omit-frame-pointer)
+    add_link_options(-fsanitize=address,undefined)
+endif()
 
 # Installation
 install(TARGETS alpha1

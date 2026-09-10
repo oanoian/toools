@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>GameStudioDashboard</RootNamespace>
+    <AssemblyName>GameStudioDashboard</AssemblyName>
+    <ApplicationTitle>Game Studio Command Center</ApplicationTitle>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="LiveChartsCore.SkiaSharpView.WPF" Version="2.0.0-rc5.4" />
+  </ItemGroup>
+
+  <!-- Copy the native C++ backend next to the app if it has been built. The glob
+       is guarded so a missing DLL is not an error: the app falls back to the
+       managed algorithm implementations via NativeBridge. -->
+  <ItemGroup>
+    <None Include="..\native\build\**\GameStudioNative.dll"
+          Condition="Exists('..\native\build')"
+          Link="GameStudioNative.dll"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\native\build\**\GameStudioNative.so"
+          Condition="Exists('..\native\build')"
+          Link="GameStudioNative.so"
+          CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>
